@@ -12,4 +12,7 @@ There are four scripts.
 It is used to setup SSH connectivity from the host on which it is run to the specified remote hosts.
 
 Note：
-The primary database needs to be configured as archive mode.
+1、The primary database needs to be configured as archive mode.
+2、Add in sqlnet.ora file:
+SQLNET.ALLOWED_LOGON_VERSION_SERVER=10
+SQLNET.ALLOWED_LOGON_VERSION_CLIENT=10
