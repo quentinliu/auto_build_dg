@@ -329,7 +329,9 @@ USERNAME=$PRI_ORCL_USER
 MGRP=`id -ng $PRI_ORCL_USER`
 export ORACLE_SID=$STD_DB_UNIQUE_NAME
 CHNAGE_PARAMETER_SQL=$PRI_BACKUP_DIR/auto_std_change_param_by_cdshrewd.sh
-echo "" > $CHNAGE_PARAMETER_SQL
+echo "export ORACLE_SID=$STD_DB_UNIQUE_NAME" > $CHNAGE_PARAMETER_SQL
+echo "export ORACLE_HOME=$REMOTE_ORACLE_HOME" >> $CHNAGE_PARAMETER_SQL
+echo "export PATH=$PATH:$ORACLE_HOME/bin" >> $CHNAGE_PARAMETER_SQL
 echo "ORACLE_SID=$STD_DB_UNIQUE_NAME" >> $CHNAGE_PARAMETER_SQL
 echo "sqlplus -S / as sysdba  <<EOF" >> $CHNAGE_PARAMETER_SQL
 echo "startup nomount;" >> $CHNAGE_PARAMETER_SQL
@@ -505,6 +507,8 @@ ssh $STD_HOST_IP mv $STD_BACKUP_DIR/orapw$STD_DB_UNIQUE_NAME $REMOTE_ORACLE_HOME
 ssh $STD_HOST_IP  chown  $USERNAME:$MGRP $REMOTE_ORACLE_HOME/dbs/orapw$STD_DB_UNIQUE_NAME
 ssh $STD_HOST_IP mv $STD_BACKUP_DIR/auto_tnsnames_by_cdshrewd.${STD_DB_UNIQUE_NAME}.tmp $REMOTE_ORACLE_HOME/network/admin/tnsnames.ora
 ssh $STD_HOST_IP  chown  $USERNAME:$MGRP $REMOTE_ORACLE_HOME/network/admin/tnsnames.ora
+ssh $STD_HOST_IP mv $STD_BACKUP_DIR/init$STD_DB_UNIQUE_NAME.ora $REMOTE_ORACLE_HOME/dbs/
+ssh $STD_HOST_IP  chown  $USERNAME:$MGRP $REMOTE_ORACLE_HOME/dbs/init$STD_DB_UNIQUE_NAME.ora
 ssh $STD_HOST_IP chmod a+x $STD_BACKUP_DIR/*.sh
 ssh $STD_HOST_IP chown -R $USERNAME:$MGRP $STD_BACKUP_DIR
 }
@@ -566,6 +570,7 @@ post_clean()
 main()
 {
 ssh $STD_HOST_IP $STD_BACKUP_DIR/auto_start_std_instance_by_cdshrewd.sh
+ssh $STD_HOST_IP $STD_BACKUP_DIR/auto_std_change_param_by_cdshrewd.sh
 $PRI_BACKUP_DIR/duplicate_database.sh
 sleep 120
 while true
